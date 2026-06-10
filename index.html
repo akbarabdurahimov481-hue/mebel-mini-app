@@ -102,161 +102,106 @@
         </div>
     </div>
 
+    <div id="admin-dashboard" style="display:none; background: #fff; padding: 15px; border-radius: 12px; margin-top: 20px;">
+    <h3>⚙️ Admin Boshqaruv Paneli</h3>
+    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <th style="padding: 5px;">Nomi</th>
+                <th style="padding: 5px;">Narxi</th>
+                <th style="padding: 5px;">Amal</th>
+            </tr>
+        </thead>
+        <tbody id="admin-table-body">
+            </tbody>
+    </table>
+    <button style="margin-top:10px; width:100%; padding:10px; border-radius:8px; border:none; background:#ff4444; color:white;" onclick="hideAdminPanel()">Panelni yopish</button>
+</div>
+
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
+    let tg = window.Telegram.WebApp;
+    tg.expand();
 
-        // DIQQAT: O'ZINGIZNING TELEGRAM ID RAQAMINGIZNI SHU YERGA YOZING!
-        // ID raqamni bilmasangiz, Telegramda @userinfobot ga kiring.
-        const MY_ADMIN_ID = 5854906145; // <-- Shuni o'zgartiring!
+    const MY_ADMIN_ID = 5854906145; // <-- O'z ID raqamingiz
+    let defaultProducts = [
+        { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" }
+    ];
 
-        // Boshlang'ich mahsulotlar ro'yxati
-        let defaultProducts = [
-            { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" },
-            { id: 2, name: "Oddiy ovqatlanish stoli", price: 800000, category: "Oshxona (Oddiy)", img: "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?w=300" },
-            { id: 3, name: "Ikki kishilik karavot", price: 3200000, category: "Yotoqxona", img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=300" },
-            { id: 4, name: "Ergonomik Kreslo", price: 950000, category: "Ofis", img: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300" }
-        ];
+    let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
+    let cart = [];
 
-        // Ma'lumotlarni brauzer xotirasidan olish (yangi qo'shilganlar o'chib ketmasligi uchun)
-        let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
-        let cart = [];
-
-        // Sahifa yuklanganda ishlaydigan funksiya
-        window.onload = () => {
-            renderProducts('Barchasi');
-            checkAdmin();
-        };
-
-        // Adminni tekshirish logikasi
-        function checkAdmin() {
-            let userId = tg.initDataUnsafe?.user?.id;
-            // Agar kirgan odam ID si Admin ID siga teng bo'lsa, tugmani ko'rsat
-            if (userId === MY_ADMIN_ID) {
-                document.getElementById('admin-btn').style.display = 'block';
-            }
+    window.onload = () => {
+        renderProducts('Barchasi');
+        if (tg.initDataUnsafe?.user?.id === MY_ADMIN_ID) {
+            document.getElementById('admin-btn').style.display = 'block';
         }
+    };
 
-        // Mahsulotlarni ekranga chizish
-        function renderProducts(categoryFilter) {
-            const container = document.getElementById('products-container');
-            container.innerHTML = ''; // Ekranni tozalash
-
-            let filteredProducts = products;
-            if (categoryFilter !== 'Barchasi') {
-                filteredProducts = products.filter(p => p.category === categoryFilter);
-            }
-
-            filteredProducts.forEach(product => {
-                let card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <img class="product-image" src="${product.img}" alt="Rasm">
-                    <div class="product-title">${product.name}</div>
-                    <div class="product-price">${product.price.toLocaleString()} so'm</div>
-                    <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">Savatga qo'shish</button>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // Kategoriyalarni bosganda ishlashi
-        function filterProducts(category) {
-            // Tugmalar rangini o'zgartirish
-            let buttons = document.querySelectorAll('.category-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            renderProducts(category);
-        }
-
-        // Savatga qo'shish
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            let totalSum = cart.reduce((sum, item) => sum + item.price, 0);
-            tg.MainButton.text = `Savat (${cart.length}) - ${totalSum.toLocaleString()} so'm`;
-            tg.MainButton.show();
-        }
-        function renderProducts(categoryFilter) {
+    function renderProducts(categoryFilter) {
         const container = document.getElementById('products-container');
         container.innerHTML = '';
-
-        let filteredProducts = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
-
-        filteredProducts.forEach(product => {
+        let filtered = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
+        
+        filtered.forEach(p => {
             let card = document.createElement('div');
             card.className = 'product-card';
-            // Admin bo'lsa, kartani bossa tahrirlash oynasi chiqadi
-            let adminAction = (tg.initDataUnsafe?.user?.id === MY_ADMIN_ID) ? `onclick="editProduct(${product.id})"` : '';
-            
-            card.innerHTML = `
-                <img class="product-image" src="${product.img || 'https://via.placeholder.com/150'}" alt="Rasm" ${adminAction}>
-                <div class="product-title">${product.name}</div>
-                <div class="product-price">${product.price.toLocaleString()} so'm</div>
-                <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">Savatga qo'shish</button>
-            `;
+            card.innerHTML = `<img class="product-image" src="${p.img}"><div class="product-title">${p.name}</div><div class="product-price">${p.price.toLocaleString()} so'm</div><button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">Savatga</button>`;
             container.appendChild(card);
         });
     }
 
-    // Tahrirlash funksiyasi
-    function editProduct(id) {
-        let product = products.find(p => p.id === id);
-        if (!product) return;
+    // ADMIN FUNKSIYALARI
+    function showAdminPanel() {
+        document.getElementById('admin-dashboard').style.display = 'block';
+        document.getElementById('products-container').style.display = 'none';
+        
+        let tbody = document.getElementById('admin-table-body');
+        tbody.innerHTML = '';
+        products.forEach(p => {
+            tbody.innerHTML += `<tr style="border-bottom:1px solid #eee;">
+                <td>${p.name}</td>
+                <td>${p.price}</td>
+                <td><button onclick="deleteProduct(${p.id})" style="background:none; border:none; cursor:pointer;">❌</button></td>
+            </tr>`;
+        });
+    }
 
-        let newName = prompt("Yangi nomni kiriting:", product.name);
-        let newPrice = prompt("Yangi narxni kiriting:", product.price);
-        let action = prompt("O'chirish uchun 'delete' deb yozing, saqlash uchun OK bosing.");
-
-        if (action === 'delete') {
-            products = products.filter(p => p.id !== id);
-        } else if (newName && newPrice) {
-            product.name = newName;
-            product.price = parseInt(newPrice);
-        }
-
-        localStorage.setItem('mebel_products', JSON.stringify(products));
+    function hideAdminPanel() {
+        document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('products-container').style.display = 'grid';
         renderProducts('Barchasi');
     }
 
-        // Admin qo'shish oynasini ochish/yopish
-        function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
-        function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
+    function deleteProduct(id) {
+        products = products.filter(p => p.id !== id);
+        localStorage.setItem('mebel_products', JSON.stringify(products));
+        showAdminPanel(); // Jadvalni yangilash
+    }
 
-        // Yangi mahsulotni saqlash
-        function saveProduct() {
-            let name = document.getElementById('new-name').value;
-            let price = parseInt(document.getElementById('new-price').value);
-            let category = document.getElementById('new-category').value;
-            let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
+    function saveProduct() {
+        let name = document.getElementById('new-name').value;
+        let price = parseInt(document.getElementById('new-price').value);
+        let category = document.getElementById('new-category').value;
+        let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
 
-            if (!name || !price) {
-                tg.showAlert("Iltimos, ism va narxni kiriting!");
-                return;
-            }
+        if (!name || !price) return tg.showAlert("Ma'lumot to'liq emas!");
 
-            let newProduct = {
-                id: Date.now(), name: name, price: price, category: category, img: img
-            };
+        products.push({ id: Date.now(), name: name, price: price, category: category, img: img });
+        localStorage.setItem('mebel_products', JSON.stringify(products));
+        
+        document.getElementById('new-name').value = '';
+        document.getElementById('new-price').value = '';
+        closeAdminModal();
+        renderProducts('Barchasi');
+    }
 
-            products.push(newProduct);
-            localStorage.setItem('mebel_products', JSON.stringify(products)); // Xotiraga saqlash
-            
-            renderProducts('Barchasi');
-            closeAdminModal();
-            tg.showAlert("Mahsulot muvaffaqiyatli qo'shildi!");
-            
-            // Inputlarni tozalash
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-price').value = '';
-            document.getElementById('new-img').value = '';
-        }
+    function addToCart(name, price) {
+        cart.push({ name, price });
+        tg.MainButton.text = `Savat: ${cart.length} ta`;
+        tg.MainButton.show();
+    }
 
-        // Savatni botga jo'natish
-        tg.MainButton.onClick(() => {
-            let data = { items: cart, total: cart.reduce((sum, item) => sum + item.price, 0) };
-            tg.sendData(JSON.stringify(data));
-        });
-    </script>
+    tg.MainButton.onClick(() => tg.sendData(JSON.stringify(cart)));
+</script>
 </body>
 </html>
