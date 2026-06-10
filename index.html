@@ -6,32 +6,179 @@
     <title>Mebel Do'koni</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 10px; background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); }
-        .product { border: 1px solid #ccc; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 10px; }
-        .product img { max-width: 100%; border-radius: 5px; }
-        button { background-color: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; }
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f4f6f9);
+            --text-color: var(--tg-theme-text-color, #222222);
+            --hint-color: var(--tg-theme-hint-color, #888888);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --button-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 5px 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: var(--hint-color);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Mahsulotlarni 2 qator qilib chiroyli joylash (Grid) */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 110px;
+            background-color: #eef2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--hint-color);
+            font-size: 12px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px 0;
+            height: 38px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            color: var(--button-color);
+            font-weight: bold;
+            font-size: 14px;
+            margin: 5px 0 10px 0;
+        }
+
+        .add-btn {
+            background-color: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Bizning Mebellar</h2>
+    <div class="header">
+        <h2>Mebel Olami</h2>
+        <p>Sifatli va qulay mebellar to'plami</p>
+    </div>
 
-    <div class="product">
-        <h3>Oshxona stoli va stullar</h3>
-        <p>Narxi: 1,200,000 so'm</p>
-        <button onclick="sendOrder('Oshxona stoli')">Savatga qo'shish</button>
+    <div class="products-grid">
+        
+        <div class="product-card">
+            <img class="product-image" src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" alt="Oshxona stoli">
+            <div class="product-title">Oshxona stoli va stullar</div>
+            <div class="product-price">1,200,000 so'm</div>
+            <button class="add-btn" onclick="addToCart('Oshxona stoli', 1200000)">Savatga qo'shish</button>
+        </div>
+
+        <div class="product-card">
+            <img class="product-image" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300" alt="Yumshoq divan">
+            <div class="product-title">Yumshoq Premium Divan</div>
+            <div class="product-price">3,500,000 so'm</div>
+            <button class="add-btn" onclick="addToCart('Premium Divan', 3500000)">Savatga qo'shish</button>
+        </div>
+
+        <div class="product-card">
+            <img class="product-image" src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=300" alt="Yotoq karavoti">
+            <div class="product-title">Ikki kishilik yotoq karavoti</div>
+            <div class="product-price">2,800,000 so'm</div>
+            <button class="add-btn" onclick="addToCart('Yotoq karavoti', 2800000)">Savatga qo'shish</button>
+        </div>
+
+        <div class="product-card">
+            <img class="product-image" src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300" alt="Ofis kreslosi">
+            <div class="product-title">Ergonomik Ofis Kreslosi</div>
+            <div class="product-price">850,000 so'm</div>
+            <button class="add-btn" onclick="addToCart('Ofis Kreslosi', 850000)">Savatga qo'shish</button>
+        </div>
+
     </div>
 
     <script>
-        // Telegram oynasini to'liq ekranga ochish
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Savatga bosilganda botga ma'lumot yuborish
-        function sendOrder(productName) {
-            tg.sendData("Buyurtma: " + productName);
-        }
-    </script>
+        // Savatni saqlash massivi
+        let cart = [];
 
+        function addToCart(name, price) {
+            // Savatga qo'shish
+            cart.push({ name: name, price: price });
+
+            // Umumiy summani hisoblash
+            let totalSum = cart.reduce((sum, item) => sum + item.price, 0);
+
+            // Telegramning asosiy pastki tugmasini sozlash
+            tg.MainButton.text = `Savatni ko'rish (${cart.length} ta) - ${totalSum.toLocaleString()} so'm`;
+            tg.MainButton.textColor = "#ffffff";
+            tg.MainButton.color = "#2481cc";
+            tg.MainButton.show();
+        }
+
+        // Telegram pastki tugmasi bosilganda botga ma'lumot jo'natish
+        tg.MainButton.onClick(function() {
+            let data = {
+                items: cart,
+                total: cart.reduce((sum, item) => sum + item.price, 0)
+            };
+            // Ma'lumotni JSON matn shaklida botga yuboramiz
+            tg.sendData(JSON.stringify(data));
+        });
+    </script>
 </body>
 </html>
