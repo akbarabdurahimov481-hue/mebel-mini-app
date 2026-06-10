@@ -15,168 +15,205 @@
             --button-text: var(--tg-theme-button-text-color, #ffffff);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 15px;
-            box-sizing: border-box;
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 80px; }
+        
+        .header { text-align: center; margin-bottom: 15px; position: relative; }
+        .header h2 { margin: 5px 0; font-size: 22px; }
+
+        /* Kategoriya menyusi */
+        .categories {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        .category-btn {
+            background-color: var(--card-bg); color: var(--text-color);
+            border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px;
+            white-space: nowrap; cursor: pointer; font-size: 14px;
+        }
+        .category-btn.active {
+            background-color: var(--button-color); color: var(--button-text); border: none;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        /* Mahsulotlar */
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-image { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background-color: #eee; }
+        .product-title { font-size: 13px; font-weight: 600; height: 35px; overflow: hidden; margin-bottom: 5px;}
+        .product-price { color: var(--button-color); font-weight: bold; font-size: 13px; margin-bottom: 10px; }
+        .add-btn { background-color: var(--button-color); color: var(--button-text); border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 12px; width: 100%; }
 
-        .header h2 {
-            margin: 5px 0;
-            font-size: 24px;
-            font-weight: 600;
+        /* ADMIN PANEL QISMI */
+        #admin-btn {
+            display: none; /* Boshida yashirin turadi */
+            background-color: #ff9800; color: white; border: none; padding: 10px;
+            border-radius: 8px; margin-bottom: 15px; width: 100%; font-weight: bold; cursor: pointer;
         }
-
-        .header p {
-            color: var(--hint-color);
-            margin: 0;
-            font-size: 14px;
+        #admin-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;
         }
-
-        /* Mahsulotlarni 2 qator qilib chiroyli joylash (Grid) */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+        .modal-content {
+            background: var(--card-bg); padding: 20px; border-radius: 12px; width: 80%;
+            display: flex; flex-direction: column; gap: 10px;
         }
-
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            text-align: center;
-            transition: transform 0.2s;
+        .modal-content input, .modal-content select {
+            padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 90%;
         }
-
-        .product-card:active {
-            transform: scale(0.98);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 110px;
-            background-color: #eef2f5;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--hint-color);
-            font-size: 12px;
-            object-fit: cover;
-            margin-bottom: 8px;
-        }
-
-        .product-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin: 5px 0;
-            height: 38px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-price {
-            color: var(--button-color);
-            font-weight: bold;
-            font-size: 14px;
-            margin: 5px 0 10px 0;
-        }
-
-        .add-btn {
-            background-color: var(--button-color);
-            color: var(--button-text);
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 13px;
-            width: 100%;
-        }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
+        .save-btn { background-color: var(--button-color); color: white; }
+        .close-btn { background-color: #f44336; color: white; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>Mebel Olami</h2>
-        <p>Sifatli va qulay mebellar to'plami</p>
     </div>
 
-    <div class="products-grid">
-        
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" alt="Oshxona stoli">
-            <div class="product-title">Oshxona stoli va stullar</div>
-            <div class="product-price">1,200,000 so'm</div>
-            <button class="add-btn" onclick="addToCart('Oshxona stoli', 1200000)">Savatga qo'shish</button>
-        </div>
+    <button id="admin-btn" onclick="openAdminModal()">⚙️ Yangi Mahsulot Qo'shish (Admin)</button>
 
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300" alt="Yumshoq divan">
-            <div class="product-title">Yumshoq Premium Divan</div>
-            <div class="product-price">3,500,000 so'm</div>
-            <button class="add-btn" onclick="addToCart('Premium Divan', 3500000)">Savatga qo'shish</button>
-        </div>
+    <div class="categories" id="category-container">
+        <div class="category-btn active" onclick="filterProducts('Barchasi')">Barchasi</div>
+        <div class="category-btn" onclick="filterProducts('Oshxona (Klassik)')">Oshxona (Klassik)</div>
+        <div class="category-btn" onclick="filterProducts('Oshxona (Oddiy)')">Oshxona (Oddiy)</div>
+        <div class="category-btn" onclick="filterProducts('Yotoqxona')">Yotoqxona</div>
+        <div class="category-btn" onclick="filterProducts('Ofis')">Ofis</div>
+    </div>
 
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=300" alt="Yotoq karavoti">
-            <div class="product-title">Ikki kishilik yotoq karavoti</div>
-            <div class="product-price">2,800,000 so'm</div>
-            <button class="add-btn" onclick="addToCart('Yotoq karavoti', 2800000)">Savatga qo'shish</button>
-        </div>
+    <div class="products-grid" id="products-container"></div>
 
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300" alt="Ofis kreslosi">
-            <div class="product-title">Ergonomik Ofis Kreslosi</div>
-            <div class="product-price">850,000 so'm</div>
-            <button class="add-btn" onclick="addToCart('Ofis Kreslosi', 850000)">Savatga qo'shish</button>
+    <div id="admin-modal">
+        <div class="modal-content">
+            <h3>Yangi Mebel Qo'shish</h3>
+            <input type="text" id="new-name" placeholder="Mebel nomi">
+            <input type="number" id="new-price" placeholder="Narxi (so'm)">
+            <select id="new-category">
+                <option value="Oshxona (Klassik)">Oshxona (Klassik)</option>
+                <option value="Oshxona (Oddiy)">Oshxona (Oddiy)</option>
+                <option value="Yotoqxona">Yotoqxona</option>
+                <option value="Ofis">Ofis</option>
+            </select>
+            <input type="text" id="new-img" placeholder="Rasm ssilkasi (URL)">
+            <div class="modal-buttons">
+                <button class="save-btn" onclick="saveProduct()">Saqlash</button>
+                <button class="close-btn" onclick="closeAdminModal()">Bekor qilish</button>
+            </div>
         </div>
-
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Savatni saqlash massivi
+        // DIQQAT: O'ZINGIZNING TELEGRAM ID RAQAMINGIZNI SHU YERGA YOZING!
+        // ID raqamni bilmasangiz, Telegramda @userinfobot ga kiring.
+        const MY_ADMIN_ID = 5854906145; // <-- Shuni o'zgartiring!
+
+        // Boshlang'ich mahsulotlar ro'yxati
+        let defaultProducts = [
+            { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" },
+            { id: 2, name: "Oddiy ovqatlanish stoli", price: 800000, category: "Oshxona (Oddiy)", img: "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?w=300" },
+            { id: 3, name: "Ikki kishilik karavot", price: 3200000, category: "Yotoqxona", img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=300" },
+            { id: 4, name: "Ergonomik Kreslo", price: 950000, category: "Ofis", img: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300" }
+        ];
+
+        // Ma'lumotlarni brauzer xotirasidan olish (yangi qo'shilganlar o'chib ketmasligi uchun)
+        let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
         let cart = [];
 
+        // Sahifa yuklanganda ishlaydigan funksiya
+        window.onload = () => {
+            renderProducts('Barchasi');
+            checkAdmin();
+        };
+
+        // Adminni tekshirish logikasi
+        function checkAdmin() {
+            let userId = tg.initDataUnsafe?.user?.id;
+            // Agar kirgan odam ID si Admin ID siga teng bo'lsa, tugmani ko'rsat
+            if (userId === MY_ADMIN_ID) {
+                document.getElementById('admin-btn').style.display = 'block';
+            }
+        }
+
+        // Mahsulotlarni ekranga chizish
+        function renderProducts(categoryFilter) {
+            const container = document.getElementById('products-container');
+            container.innerHTML = ''; // Ekranni tozalash
+
+            let filteredProducts = products;
+            if (categoryFilter !== 'Barchasi') {
+                filteredProducts = products.filter(p => p.category === categoryFilter);
+            }
+
+            filteredProducts.forEach(product => {
+                let card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img class="product-image" src="${product.img}" alt="Rasm">
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-price">${product.price.toLocaleString()} so'm</div>
+                    <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">Savatga qo'shish</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Kategoriyalarni bosganda ishlashi
+        function filterProducts(category) {
+            // Tugmalar rangini o'zgartirish
+            let buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderProducts(category);
+        }
+
+        // Savatga qo'shish
         function addToCart(name, price) {
-            // Savatga qo'shish
-            cart.push({ name: name, price: price });
-
-            // Umumiy summani hisoblash
+            cart.push({ name, price });
             let totalSum = cart.reduce((sum, item) => sum + item.price, 0);
-
-            // Telegramning asosiy pastki tugmasini sozlash
-            tg.MainButton.text = `Savatni ko'rish (${cart.length} ta) - ${totalSum.toLocaleString()} so'm`;
-            tg.MainButton.textColor = "#ffffff";
-            tg.MainButton.color = "#2481cc";
+            tg.MainButton.text = `Savat (${cart.length}) - ${totalSum.toLocaleString()} so'm`;
             tg.MainButton.show();
         }
 
-        // Telegram pastki tugmasi bosilganda botga ma'lumot jo'natish
-        tg.MainButton.onClick(function() {
-            let data = {
-                items: cart,
-                total: cart.reduce((sum, item) => sum + item.price, 0)
+        // Admin qo'shish oynasini ochish/yopish
+        function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
+        function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        // Yangi mahsulotni saqlash
+        function saveProduct() {
+            let name = document.getElementById('new-name').value;
+            let price = parseInt(document.getElementById('new-price').value);
+            let category = document.getElementById('new-category').value;
+            let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
+
+            if (!name || !price) {
+                tg.showAlert("Iltimos, ism va narxni kiriting!");
+                return;
+            }
+
+            let newProduct = {
+                id: Date.now(), name: name, price: price, category: category, img: img
             };
-            // Ma'lumotni JSON matn shaklida botga yuboramiz
+
+            products.push(newProduct);
+            localStorage.setItem('mebel_products', JSON.stringify(products)); // Xotiraga saqlash
+            
+            renderProducts('Barchasi');
+            closeAdminModal();
+            tg.showAlert("Mahsulot muvaffaqiyatli qo'shildi!");
+            
+            // Inputlarni tozalash
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-price').value = '';
+            document.getElementById('new-img').value = '';
+        }
+
+        // Savatni botga jo'natish
+        tg.MainButton.onClick(() => {
+            let data = { items: cart, total: cart.reduce((sum, item) => sum + item.price, 0) };
             tg.sendData(JSON.stringify(data));
         });
     </script>
