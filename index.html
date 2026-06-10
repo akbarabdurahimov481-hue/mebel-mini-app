@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mebel Do'koni</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 10px; background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); }
+        .product { border: 1px solid #ccc; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 10px; }
+        .product img { max-width: 100%; border-radius: 5px; }
+        button { background-color: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h2>Bizning Mebellar</h2>
+
+    <div class="product">
+        <h3>Oshxona stoli va stullar</h3>
+        <p>Narxi: 1,200,000 so'm</p>
+        <button onclick="sendOrder('Oshxona stoli')">Savatga qo'shish</button>
+    </div>
+
+    <script>
+        // Telegram oynasini to'liq ekranga ochish
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Savatga bosilganda botga ma'lumot yuborish
+        function sendOrder(productName) {
+            tg.sendData("Buyurtma: " + productName);
+        }
+    </script>
+
+</body>
+</html>
