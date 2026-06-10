@@ -179,21 +179,29 @@
     }
 
     function saveProduct() {
-        let name = document.getElementById('new-name').value;
-        let price = parseInt(document.getElementById('new-price').value);
-        let category = document.getElementById('new-category').value;
-        let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
+    let newProduct = {
+        name: document.getElementById('new-name').value,
+        price: parseInt(document.getElementById('new-price').value),
+        category: document.getElementById('new-category').value,
+        img: document.getElementById('new-img').value
+    };
 
-        if (!name || !price) return tg.showAlert("Ma'lumot to'liq emas!");
-
-        products.push({ id: Date.now(), name: name, price: price, category: category, img: img });
-        localStorage.setItem('mebel_products', JSON.stringify(products));
-        
-        document.getElementById('new-name').value = '';
-        document.getElementById('new-price').value = '';
+    // Serverga jo'natish
+    fetch('http://localhost:8080/api/products/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newProduct)
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert("Serverdan javob: " + data);
+        renderProducts('Barchasi'); // Ekranni yangilash
         closeAdminModal();
-        renderProducts('Barchasi');
-    }
+    })
+    .catch(error => console.error('Xatolik:', error));
+        }
 
     function addToCart(name, price) {
         cart.push({ name, price });
