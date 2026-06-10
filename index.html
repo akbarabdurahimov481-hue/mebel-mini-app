@@ -9,207 +9,129 @@
         :root {
             --bg-color: var(--tg-theme-bg-color, #f4f6f9);
             --text-color: var(--tg-theme-text-color, #222222);
-            --hint-color: var(--tg-theme-hint-color, #888888);
             --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
             --button-color: var(--tg-theme-button-color, #2481cc);
             --button-text: var(--tg-theme-button-text-color, #ffffff);
         }
-
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 80px; }
+        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; }
         
-        .header { text-align: center; margin-bottom: 15px; position: relative; }
-        .header h2 { margin: 5px 0; font-size: 22px; }
-
-        /* Kategoriya menyusi */
-        .categories {
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
-        }
-        .categories::-webkit-scrollbar { display: none; }
-        .category-btn {
-            background-color: var(--card-bg); color: var(--text-color);
-            border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px;
-            white-space: nowrap; cursor: pointer; font-size: 14px;
-        }
-        .category-btn.active {
-            background-color: var(--button-color); color: var(--button-text); border: none;
-        }
+        .header { text-align: center; margin-bottom: 15px; }
+        
+        /* Kategoriya */
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .category-btn { background: var(--card-bg); border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+        .category-btn.active { background: var(--button-color); color: var(--button-text); border: none; }
 
         /* Mahsulotlar */
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-image { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background-color: #eee; }
-        .product-title { font-size: 13px; font-weight: 600; height: 35px; overflow: hidden; margin-bottom: 5px;}
-        .product-price { color: var(--button-color); font-weight: bold; font-size: 13px; margin-bottom: 10px; }
-        .add-btn { background-color: var(--button-color); color: var(--button-text); border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 12px; width: 100%; }
+        .product-card { background: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; }
+        .product-image { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
+        .add-btn { background: var(--button-color); color: var(--button-text); border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
 
-        /* ADMIN PANEL QISMI */
-        #admin-btn {
-            display: none; /* Boshida yashirin turadi */
-            background-color: #ff9800; color: white; border: none; padding: 10px;
-            border-radius: 8px; margin-bottom: 15px; width: 100%; font-weight: bold; cursor: pointer;
-        }
-        #admin-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--card-bg); padding: 20px; border-radius: 12px; width: 80%;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .modal-content input, .modal-content select {
-            padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 90%;
-        }
-        .modal-buttons { display: flex; gap: 10px; }
-        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
-        .save-btn { background-color: var(--button-color); color: white; }
-        .close-btn { background-color: #f44336; color: white; }
+        /* Admin Modal */
+        #admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 12px; width: 80%; display: flex; flex-direction: column; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>Mebel Olami</h2>
-    </div>
+    <div class="header"><h2>Mebel Olami</h2></div>
 
-    <button id="admin-btn" onclick="openAdminModal()">⚙️ Yangi Mahsulot Qo'shish (Admin)</button>
+    <button id="admin-btn" style="display:none; width:100%; padding:10px; background:#ff9800; border:none; color:white; border-radius:8px; margin-bottom:10px;" onclick="openAdminModal()">⚙️ Mahsulot qo'shish / Boshqarish</button>
 
     <div class="categories" id="category-container">
-        <div class="category-btn active" onclick="filterProducts('Barchasi')">Barchasi</div>
-        <div class="category-btn" onclick="filterProducts('Oshxona (Klassik)')">Oshxona (Klassik)</div>
-        <div class="category-btn" onclick="filterProducts('Oshxona (Oddiy)')">Oshxona (Oddiy)</div>
-        <div class="category-btn" onclick="filterProducts('Yotoqxona')">Yotoqxona</div>
-        <div class="category-btn" onclick="filterProducts('Ofis')">Ofis</div>
+        <div class="category-btn active" onclick="filterProducts('Barchasi', this)">Barchasi</div>
+        <div class="category-btn" onclick="filterProducts('Oshxona (Klassik)', this)">Oshxona (Klassik)</div>
+        <div class="category-btn" onclick="filterProducts('Oshxona (Oddiy)', this)">Oshxona (Oddiy)</div>
+        <div class="category-btn" onclick="filterProducts('Yotoqxona', this)">Yotoqxona</div>
+        <div class="category-btn" onclick="filterProducts('Ofis', this)">Ofis</div>
     </div>
 
     <div class="products-grid" id="products-container"></div>
 
     <div id="admin-modal">
         <div class="modal-content">
-            <h3>Yangi Mebel Qo'shish</h3>
-            <input type="text" id="new-name" placeholder="Mebel nomi">
-            <input type="number" id="new-price" placeholder="Narxi (so'm)">
+            <h3>Yangi Mebel</h3>
+            <input type="text" id="new-name" placeholder="Nomi">
+            <input type="number" id="new-price" placeholder="Narxi">
             <select id="new-category">
                 <option value="Oshxona (Klassik)">Oshxona (Klassik)</option>
                 <option value="Oshxona (Oddiy)">Oshxona (Oddiy)</option>
                 <option value="Yotoqxona">Yotoqxona</option>
                 <option value="Ofis">Ofis</option>
             </select>
-            <input type="text" id="new-img" placeholder="Rasm ssilkasi (URL)">
-            <div class="modal-buttons">
-                <button class="save-btn" onclick="saveProduct()">Saqlash</button>
-                <button class="close-btn" onclick="closeAdminModal()">Bekor qilish</button>
-            </div>
+            <input type="text" id="new-img" placeholder="Rasm URL">
+            <button class="add-btn" onclick="saveProduct()">Saqlash</button>
+            <button onclick="closeAdminModal()" style="background:red; color:white; border:none; padding:8px;">Yopish</button>
         </div>
     </div>
 
-    <div id="admin-dashboard" style="display:none; background: #fff; padding: 15px; border-radius: 12px; margin-top: 20px;">
-    <h3>⚙️ Admin Boshqaruv Paneli</h3>
-    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
-        <thead>
-            <tr style="border-bottom: 1px solid #ddd;">
-                <th style="padding: 5px;">Nomi</th>
-                <th style="padding: 5px;">Narxi</th>
-                <th style="padding: 5px;">Amal</th>
-            </tr>
-        </thead>
-        <tbody id="admin-table-body">
-            </tbody>
-    </table>
-    <button style="margin-top:10px; width:100%; padding:10px; border-radius:8px; border:none; background:#ff4444; color:white;" onclick="hideAdminPanel()">Panelni yopish</button>
-</div>
-
     <script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
+        let tg = window.Telegram.WebApp;
+        tg.expand();
 
-    const MY_ADMIN_ID = 5854906145; // <-- O'z ID raqamingiz
-    let defaultProducts = [
-        { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" }
-    ];
+        const MY_ADMIN_ID = 5854906145;
+        let defaultProducts = [
+            { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" }
+        ];
 
-    let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
-    let cart = [];
+        // Xatolik tuzatildi: || operatori qo'shildi
+        let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
+        let cart = [];
 
-    window.onload = () => {
-        renderProducts('Barchasi');
-        if (tg.initDataUnsafe?.user?.id === MY_ADMIN_ID) {
-            document.getElementById('admin-btn').style.display = 'block';
-        }
-    };
+        window.onload = () => {
+            renderProducts('Barchasi');
+            if (tg.initDataUnsafe?.user?.id == MY_ADMIN_ID) {
+                document.getElementById('admin-btn').style.display = 'block';
+            }
+        };
 
-    function renderProducts(categoryFilter) {
-        const container = document.getElementById('products-container');
-        container.innerHTML = '';
-        let filtered = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
-        
-        filtered.forEach(p => {
-            let card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `<img class="product-image" src="${p.img}"><div class="product-title">${p.name}</div><div class="product-price">${p.price.toLocaleString()} so'm</div><button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">Savatga</button>`;
-            container.appendChild(card);
-        });
-    }
-
-    // ADMIN FUNKSIYALARI
-    function showAdminPanel() {
-        document.getElementById('admin-dashboard').style.display = 'block';
-        document.getElementById('products-container').style.display = 'none';
-        
-        let tbody = document.getElementById('admin-table-body');
-        tbody.innerHTML = '';
-        products.forEach(p => {
-            tbody.innerHTML += `<tr style="border-bottom:1px solid #eee;">
-                <td>${p.name}</td>
-                <td>${p.price}</td>
-                <td><button onclick="deleteProduct(${p.id})" style="background:none; border:none; cursor:pointer;">❌</button></td>
-            </tr>`;
-        });
-    }
-
-    function hideAdminPanel() {
-        document.getElementById('admin-dashboard').style.display = 'none';
-        document.getElementById('products-container').style.display = 'grid';
-        renderProducts('Barchasi');
-    }
-
-    function deleteProduct(id) {
-        products = products.filter(p => p.id !== id);
-        localStorage.setItem('mebel_products', JSON.stringify(products));
-        showAdminPanel(); // Jadvalni yangilash
-    }
-
-    function saveProduct() {
-    let newProduct = {
-        name: document.getElementById('new-name').value,
-        price: parseInt(document.getElementById('new-price').value),
-        category: document.getElementById('new-category').value,
-        img: document.getElementById('new-img').value
-    };
-
-    // Serverga jo'natish
-    fetch('http://localhost:8080/api/products/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newProduct)
-    })
-    .then(response => response.text())
-    .then(data => {
-        alert("Serverdan javob: " + data);
-        renderProducts('Barchasi'); // Ekranni yangilash
-        closeAdminModal();
-    })
-    .catch(error => console.error('Xatolik:', error));
+        // Filtr funksiyasi
+        function filterProducts(category, element) {
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            renderProducts(category);
         }
 
-    function addToCart(name, price) {
-        cart.push({ name, price });
-        tg.MainButton.text = `Savat: ${cart.length} ta`;
-        tg.MainButton.show();
-    }
+        function renderProducts(categoryFilter) {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+            let filtered = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
+            
+            filtered.forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `<img class="product-image" src="${p.img}"><div style="font-weight:bold">${p.name}</div><div style="color:var(--button-color)">${p.price.toLocaleString()} so'm</div><button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">Savatga</button>`;
+                container.appendChild(card);
+            });
+        }
 
-    tg.MainButton.onClick(() => tg.sendData(JSON.stringify(cart)));
-</script>
+        function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
+        function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        function saveProduct() {
+            let name = document.getElementById('new-name').value;
+            let price = parseInt(document.getElementById('new-price').value);
+            let category = document.getElementById('new-category').value;
+            // Xatolik tuzatildi: || operatori qo'shildi
+            let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
+
+            if (!name || !price) return alert("Ma'lumot to'liq emas!");
+
+            products.push({ id: Date.now(), name, price, category, img });
+            localStorage.setItem('mebel_products', JSON.stringify(products));
+            
+            closeAdminModal();
+            renderProducts('Barchasi');
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            tg.MainButton.text = `Savat: ${cart.length} ta`;
+            tg.MainButton.show();
+        }
+
+        tg.MainButton.onClick(() => tg.sendData(JSON.stringify(cart)));
+    </script>
 </body>
 </html>
