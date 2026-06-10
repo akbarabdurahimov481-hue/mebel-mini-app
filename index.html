@@ -177,6 +177,47 @@
             tg.MainButton.text = `Savat (${cart.length}) - ${totalSum.toLocaleString()} so'm`;
             tg.MainButton.show();
         }
+        function renderProducts(categoryFilter) {
+        const container = document.getElementById('products-container');
+        container.innerHTML = '';
+
+        let filteredProducts = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
+
+        filteredProducts.forEach(product => {
+            let card = document.createElement('div');
+            card.className = 'product-card';
+            // Admin bo'lsa, kartani bossa tahrirlash oynasi chiqadi
+            let adminAction = (tg.initDataUnsafe?.user?.id === MY_ADMIN_ID) ? `onclick="editProduct(${product.id})"` : '';
+            
+            card.innerHTML = `
+                <img class="product-image" src="${product.img || 'https://via.placeholder.com/150'}" alt="Rasm" ${adminAction}>
+                <div class="product-title">${product.name}</div>
+                <div class="product-price">${product.price.toLocaleString()} so'm</div>
+                <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">Savatga qo'shish</button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Tahrirlash funksiyasi
+    function editProduct(id) {
+        let product = products.find(p => p.id === id);
+        if (!product) return;
+
+        let newName = prompt("Yangi nomni kiriting:", product.name);
+        let newPrice = prompt("Yangi narxni kiriting:", product.price);
+        let action = prompt("O'chirish uchun 'delete' deb yozing, saqlash uchun OK bosing.");
+
+        if (action === 'delete') {
+            products = products.filter(p => p.id !== id);
+        } else if (newName && newPrice) {
+            product.name = newName;
+            product.price = parseInt(newPrice);
+        }
+
+        localStorage.setItem('mebel_products', JSON.stringify(products));
+        renderProducts('Barchasi');
+    }
 
         // Admin qo'shish oynasini ochish/yopish
         function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
