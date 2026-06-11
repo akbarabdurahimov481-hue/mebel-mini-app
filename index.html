@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mebel Do'koni Katalogi</title>
+    <title>IZZAT MEBEL Katalogi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg-color: #f7f9fa;
             --text-color: #222;
             --card-bg: #ffffff;
-            --active-color: #e53935; /* Rasmdagi qizil rang */
+            --active-color: #e53935; /* Chiroyli qizil rang */
             --gray-text: #888;
         }
 
@@ -25,10 +25,10 @@
         body { 
             background-color: var(--bg-color); 
             color: var(--text-color); 
-            padding-bottom: 70px; /* Pastki menyu uchun joy */
+            padding-bottom: 70px;
         }
 
-        /* --- YUQORI QISM (HEADER) --- */
+        /* --- HEADER --- */
         .header { 
             display: flex; 
             justify-content: space-between; 
@@ -48,14 +48,13 @@
             color: var(--text-color);
         }
 
-        /* --- KATEGORIYALAR (GORIZONTAL MENYU) --- */
+        /* --- CATEGORIES --- */
         .categories-wrapper {
             padding: 0 15px 15px 15px;
             display: flex;
             gap: 10px;
             overflow-x: auto;
             white-space: nowrap;
-            /* Scrollbarni yashirish */
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
@@ -77,7 +76,7 @@
             color: #fff;
         }
 
-        /* --- MAHSULOTLAR GRIDI --- */
+        /* --- PRODUCTS GRID --- */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -140,7 +139,7 @@
             transform: scale(0.9);
         }
 
-        /* --- PASTKI NAVIGATSIYA --- */
+        /* --- BOTTOM NAV --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -182,7 +181,12 @@
             border-radius: 10px;
             display: none;
         }
-
+        .loading-text {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-text);
+        }
     </style>
 </head>
 <body>
@@ -193,10 +197,12 @@
     </div>
 
     <div class="categories-wrapper" id="categories-container">
-        </div>
+        <div class="category-chip active">Barchasi</div>
+    </div>
 
     <div class="products-grid" id="products-container">
-        </div>
+        <div class="loading-text">Mebellar yuklanmoqda...</div>
+    </div>
 
     <div class="bottom-nav">
         <div class="nav-item" onclick="switchTab(this)">
@@ -220,30 +226,43 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Ekranni to'liq ochish
+        tg.expand(); 
 
-        // Ma'lumotlar bazasi (Siz tomondan keladigan yoki o'zgartiriladigan data)
-        const categories = ["Barchasi", "Oshxona", "Yotoqxona", "Ofis", "Yumshoq mebel"];
-        
-        const products = [
-            { id: 1, name: "Premium oshxona stoli va 6 ta stul", price: 4500000, category: "Oshxona", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" },
-            { id: 2, name: "Rahbar ofis kreslosi (Qora charmli)", price: 1200000, category: "Ofis", img: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=300" },
-            { id: 3, name: "Zamonaviy yotoqxona shkafi", price: 3200000, category: "Yotoqxona", img: "https://images.unsplash.com/photo-1595514535415-ebad07b5391e?w=300" },
-            { id: 4, name: "Yumshoq L-simon burchak divan", price: 5800000, category: "Yumshoq mebel", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300" },
-            { id: 5, name: "Yog'ochli kofe stoli", price: 850000, category: "Yumshoq mebel", img: "https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=300" },
-            { id: 6, name: "Ergonomik xodim stoli", price: 1500000, category: "Ofis", img: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6ea?w=300" }
-        ];
+        // 🟢 BACKEND MANZILI (O'zingizning ngrok xostingizni kiriting)
+        const API_URL = "http://localhost:8080/api/products"; 
 
+        let products = [];
+        let categories = ["Barchasi"];
         let currentCategory = "Barchasi";
         let cart = [];
 
-        // Ishga tushganda render qilish
+        // Sahifa yuklanganda API'dan ma'lumot olish
         window.onload = () => {
-            renderCategories();
-            renderProducts();
+            fetchProductsFromBackend();
         };
 
-        // Gorizontal kategoriyalarni chizish
+        // Backend API orqali ma'lumotlarni tortish
+        function fetchProductsFromBackend() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    products = data;
+                    
+                    // Mahsulotlar ichidan unikal kategoriyalarni ajratib olish
+                    let uniqueCategories = [...new Set(products.map(p => p.category))];
+                    categories = ["Barchasi", ...uniqueCategories];
+                    
+                    renderCategories();
+                    renderProducts();
+                })
+                .catch(error => {
+                    console.error("Xatolik yuz berdi:", error);
+                    document.getElementById('products-container').innerHTML = 
+                        `<p class="loading-text" style="color:red;">Ma'lumotlarni yuklashda xatolik yuz berdi!</p>`;
+                });
+        }
+
+        // Gorizontal menyuda kategoriyalarni chiqarish
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = '';
@@ -254,25 +273,24 @@
                 chip.innerText = cat;
                 chip.onclick = () => {
                     currentCategory = cat;
-                    renderCategories(); // Aktiv rangni o'zgartirish uchun qayta chizamiz
-                    renderProducts();   // Mahsulotlarni filtrlash uchun
+                    renderCategories(); 
+                    renderProducts();   
                 };
                 container.appendChild(chip);
             });
         }
 
-        // Mahsulotlarni chizish
+        // Mahsulotlarni ekranga chiqarish (Grid format)
         function renderProducts() {
             const container = document.getElementById('products-container');
             container.innerHTML = '';
 
-            // Barchasi bo'lsa hammasini, aks holda filter qilib ko'rsatamiz
             let filteredProducts = currentCategory === "Barchasi" 
                 ? products 
                 : products.filter(p => p.category === currentCategory);
 
             if(filteredProducts.length === 0) {
-                container.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888; padding: 20px;">Bu bo'limda mahsulot yo'q</p>`;
+                container.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888; padding: 40px;">Ushbu bo'limda mahsulot yo'q</p>`;
                 return;
             }
 
@@ -280,47 +298,45 @@
                 let card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
-                    <img src="${p.img}" alt="${p.name}">
+                    <img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.name}">
                     <div class="product-title">${p.name}</div>
                     <div class="product-price">${formatPrice(p.price)} so'm</div>
-                    <button class="add-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price})">+</button>
+                    <button class="add-btn" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})">+</button>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // Narxlarni chiroyli ko'rsatish (Masalan: 4 500 000)
         function formatPrice(price) {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
 
-        // Savatga qo'shish va Telegram Main Buttonni boshqarish
+        // Savatga qo'shish va Telegram pastki Tugmasini yangilash
         function addToCart(id, name, price) {
             cart.push({ id, name, price });
             
-            // Savat znachogini yangilash
             const badge = document.getElementById('cart-badge');
             badge.innerText = cart.length;
             badge.style.display = 'block';
 
-            // Telegram pastki katta tugmasini yoqish
-            tg.MainButton.text = `Savatga o'tish (${cart.length} ta)`;
-            tg.MainButton.color = "#e53935"; // Qizil rang
+            // Telegram asosiq tugmasini (MainButton) o'zgartirish
+            tg.MainButton.text = `Buyurtma berish (${cart.length} ta)`;
+            tg.MainButton.color = "#e53935"; 
             tg.MainButton.show();
         }
 
-        // Pastki menyu animatsiyasi (vizual)
         function switchTab(element) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
         }
 
-        // Telegram tugmasi bosilganda ma'lumotni botga jo'natish
+        // Telegram Main tugmasi bosilganda ma'lumotni botga qaytarish
         tg.MainButton.onClick(() => {
-            tg.sendData(JSON.stringify(cart));
-            tg.close();
+            if(cart.length > 0) {
+                tg.sendData(JSON.stringify(cart)); // Ma'lumot botga ketadi
+                tg.close(); // Oynani yopish
+            }
         });
-
     </script>
 </body>
 </html>
