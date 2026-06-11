@@ -2,67 +2,216 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mebel Do'koni</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #f4f6f9);
-            --text-color: var(--tg-theme-text-color, #222222);
-            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
-            --button-color: var(--tg-theme-button-color, #2481cc);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
+            --bg-color: #f4f8f7; /* Rasmdagi orqa fon rangiga mos */
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --active-color: #f28b82; /* Rasmdagi aktiv tugma rangi uchun */
+            --primary-color: #2b2b2b;
         }
-        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; }
-        
-        .header { text-align: center; margin-bottom: 15px; }
-        
-        /* Kategoriya */
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-        .category-btn { background: var(--card-bg); border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
-        .category-btn.active { background: var(--button-color); color: var(--button-text); border: none; }
 
-        /* Mahsulotlar */
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; }
-        .product-image { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
-        .add-btn { background: var(--button-color); color: var(--button-text); border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; 
+            padding: 0; 
+            padding-bottom: 80px; /* Pastki menyu uchun joy */
+        }
+        
+        /* Tepa qism (Header) - Rasmga moslangan */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 20px; 
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            font-size: 20px;
+            color: #666;
+        }
 
+        /* Asosiy konteyner */
+        .container { padding: 0 15px; }
+
+        /* Kategoriyalar (Rasmdagi kabi grid) */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+        }
+        .category-card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 15px 10px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .category-card:active { transform: scale(0.97); }
+        .category-card img { 
+            width: 100%; 
+            height: 90px; 
+            object-fit: contain; 
+            margin-bottom: 10px;
+        }
+        .category-card span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        /* Mahsulotlar (Kategoriya ichiga kirganda) */
+        .product-card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .product-card img { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .product-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .product-price { color: #555; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+        .add-btn { 
+            background: #e8f0fe; 
+            color: #1a73e8; 
+            border: none; 
+            padding: 8px; 
+            border-radius: 8px; 
+            font-weight: bold;
+            cursor: pointer; 
+            margin-top: auto;
+        }
+
+        /* Pastki navigatsiya (Bottom Nav) - Rasmga 100% mos */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            gap: 4px;
+        }
+        .nav-item.active { color: #ff7675; }
+        .nav-item.active .nav-icon { color: #ff7675; }
+        .nav-icon { font-size: 22px; }
+
+        /* Yordamchi elementlar */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
         /* Admin Modal */
-        #admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 12px; width: 80%; display: flex; flex-direction: column; gap: 10px; }
+        #admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 16px; width: 85%; display: flex; flex-direction: column; gap: 12px; }
+        .modal-content input, .modal-content select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
     </style>
 </head>
 <body>
 
-    <div class="header"><h2>Mebel Olami</h2></div>
-
-    <button id="admin-btn" style="display:none; width:100%; padding:10px; background:#ff9800; border:none; color:white; border-radius:8px; margin-bottom:10px;" onclick="openAdminModal()">⚙️ Mahsulot qo'shish / Boshqarish</button>
-
-    <div class="categories" id="category-container">
-        <div class="category-btn active" onclick="filterProducts('Barchasi', this)">Barchasi</div>
-        <div class="category-btn" onclick="filterProducts('Oshxona (Klassik)', this)">Oshxona (Klassik)</div>
-        <div class="category-btn" onclick="filterProducts('Oshxona (Oddiy)', this)">Oshxona (Oddiy)</div>
-        <div class="category-btn" onclick="filterProducts('Yotoqxona', this)">Yotoqxona</div>
-        <div class="category-btn" onclick="filterProducts('Ofis', this)">Ofis</div>
+    <div class="header">
+        <div class="header-logo">
+            🛋️ Izzat Mebel
+        </div>
+        <div class="header-icons">
+            <span>👤</span>
+            <span>🔍</span>
+        </div>
     </div>
 
-    <div class="products-grid" id="products-container"></div>
+    <div class="container">
+        <button id="admin-btn" style="display:none; width:100%; padding:12px; background:#4CAF50; border:none; color:white; border-radius:12px; margin-bottom:15px; font-weight:bold; box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);" onclick="openAdminModal()">⚙️ Yangi mebel qo'shish</button>
+
+        <div id="back-btn" class="back-btn" style="display:none;" onclick="showCategories()">
+            ⬅️ Orqaga
+        </div>
+
+        <div class="grid-container" id="main-content"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showCategories()">
+            <span class="nav-icon">🏠</span>
+            <span>Menyu</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">🤍</span>
+            <span>Izbrannыe</span>
+        </div>
+        <div class="nav-item" onclick="showCart()">
+            <span class="nav-icon">🛒</span>
+            <span>Korzina (<span id="cart-count">0</span>)</span>
+        </div>
+    </div>
 
     <div id="admin-modal">
         <div class="modal-content">
-            <h3>Yangi Mebel</h3>
-            <input type="text" id="new-name" placeholder="Nomi">
-            <input type="number" id="new-price" placeholder="Narxi">
+            <h3 style="margin: 0; text-align: center;">Yangi Mebel Qo'shish</h3>
+            <input type="text" id="new-name" placeholder="Mebel nomi">
+            <input type="number" id="new-price" placeholder="Narxi (so'm)">
             <select id="new-category">
-                <option value="Oshxona (Klassik)">Oshxona (Klassik)</option>
-                <option value="Oshxona (Oddiy)">Oshxona (Oddiy)</option>
+                <option value="Oshxona">Oshxona</option>
                 <option value="Yotoqxona">Yotoqxona</option>
                 <option value="Ofis">Ofis</option>
+                <option value="Yumshoq mebel">Yumshoq mebel</option>
             </select>
-            <input type="text" id="new-img" placeholder="Rasm URL">
-            <button class="add-btn" onclick="saveProduct()">Saqlash</button>
-            <button onclick="closeAdminModal()" style="background:red; color:white; border:none; padding:8px;">Yopish</button>
+            <input type="text" id="new-img" placeholder="Rasm havolasi (URL)">
+            <button class="add-btn" style="background:#4CAF50; color:white; padding:12px;" onclick="saveProduct()">Saqlash</button>
+            <button onclick="closeAdminModal()" style="background:#ff4757; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">Bekor qilish</button>
         </div>
     </div>
 
@@ -71,41 +220,75 @@
         tg.expand();
 
         const MY_ADMIN_ID = 5854906145;
-        let defaultProducts = [
-            { id: 1, name: "Qirollik stoli", price: 2500000, category: "Oshxona (Klassik)", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" }
+        
+        // Asosiy kategoriyalar (Rasmlari bilan)
+        const categories = [
+            { name: "Oshxona", img: "https://cdn-icons-png.flaticon.com/512/2613/2613180.png" },
+            { name: "Yotoqxona", img: "https://cdn-icons-png.flaticon.com/512/2613/2613133.png" },
+            { name: "Ofis", img: "https://cdn-icons-png.flaticon.com/512/3202/3202865.png" },
+            { name: "Yumshoq mebel", img: "https://cdn-icons-png.flaticon.com/512/2613/2613146.png" }
         ];
 
-        // Xatolik tuzatildi: || operatori qo'shildi
+        let defaultProducts = [
+            { id: 1, name: "Oshxona stoli", price: 2500000, category: "Oshxona", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=300" },
+            { id: 2, name: "Ofis kreslosi", price: 1200000, category: "Ofis", img: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=300" }
+        ];
+
         let products = JSON.parse(localStorage.getItem('mebel_products')) || defaultProducts;
         let cart = [];
 
         window.onload = () => {
-            renderProducts('Barchasi');
+            showCategories(); // Dastlab kategoriyalarni ko'rsatamiz
             if (tg.initDataUnsafe?.user?.id == MY_ADMIN_ID) {
                 document.getElementById('admin-btn').style.display = 'block';
             }
         };
 
-        // Filtr funksiyasi
-        function filterProducts(category, element) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            renderProducts(category);
-        }
-
-        function renderProducts(categoryFilter) {
-            const container = document.getElementById('products-container');
+        // 1. Kategoriyalarni ekranga chiqarish (Rasmga mos)
+        function showCategories() {
+            document.getElementById('back-btn').style.display = 'none';
+            const container = document.getElementById('main-content');
             container.innerHTML = '';
-            let filtered = (categoryFilter === 'Barchasi') ? products : products.filter(p => p.category === categoryFilter);
             
-            filtered.forEach(p => {
+            categories.forEach(cat => {
                 let card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `<img class="product-image" src="${p.img}"><div style="font-weight:bold">${p.name}</div><div style="color:var(--button-color)">${p.price.toLocaleString()} so'm</div><button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">Savatga</button>`;
+                card.className = 'category-card';
+                card.onclick = () => renderProductsForCategory(cat.name);
+                card.innerHTML = `
+                    <img src="${cat.img}" alt="${cat.name}">
+                    <span>${cat.name}</span>
+                `;
                 container.appendChild(card);
             });
         }
 
+        // 2. Kategoriya bosilganda ichidagi mahsulotlarni ko'rsatish
+        function renderProductsForCategory(categoryName) {
+            document.getElementById('back-btn').style.display = 'inline-block';
+            const container = document.getElementById('main-content');
+            container.innerHTML = '';
+            
+            let filtered = products.filter(p => p.category === categoryName);
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">Bu bo'limda hozircha mahsulot yo'q</p>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.img}" alt="${p.name}">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">${p.price.toLocaleString()} so'm</div>
+                    <button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">Savatga qo'shish</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Admin funksiyalari
         function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
         function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
 
@@ -113,21 +296,27 @@
             let name = document.getElementById('new-name').value;
             let price = parseInt(document.getElementById('new-price').value);
             let category = document.getElementById('new-category').value;
-            // Xatolik tuzatildi: || operatori qo'shildi
             let img = document.getElementById('new-img').value || 'https://via.placeholder.com/150';
 
-            if (!name || !price) return alert("Ma'lumot to'liq emas!");
+            if (!name || !price) return alert("Iltimos, ma'lumotlarni to'liq kiriting!");
 
             products.push({ id: Date.now(), name, price, category, img });
             localStorage.setItem('mebel_products', JSON.stringify(products));
             
+            // Maydonlarni tozalash
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-price').value = '';
+            document.getElementById('new-img').value = '';
+
             closeAdminModal();
-            renderProducts('Barchasi');
+            showCategories(); // Saqlangach yana bosh sahifaga qaytaradi
         }
 
+        // Savat logikasi
         function addToCart(name, price) {
             cart.push({ name, price });
-            tg.MainButton.text = `Savat: ${cart.length} ta`;
+            document.getElementById('cart-count').innerText = cart.length;
+            tg.MainButton.text = `Savatga o'tish (${cart.length} ta mebel)`;
             tg.MainButton.show();
         }
 
